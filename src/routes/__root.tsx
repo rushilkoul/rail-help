@@ -72,15 +72,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "rail help" },
+      { name: "description", content: "Seat Scout is a mobile-first web app for finding vacant train seats." },
       { name: "theme-color", content: "#0a0a14" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "rail help" },
+      { property: "og:description", content: "Seat Scout is a mobile-first web app for finding vacant train seats." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "rail help" },
+      { name: "twitter:description", content: "Seat Scout is a mobile-first web app for finding vacant train seats." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b92c3ec4-b8eb-4167-8a7b-2445cf4e530a/id-preview-f850ff78--c56d85df-44d1-442a-bd18-29a6613a1ede.lovable.app-1780001331162.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b92c3ec4-b8eb-4167-8a7b-2445cf4e530a/id-preview-f850ff78--c56d85df-44d1-442a-bd18-29a6613a1ede.lovable.app-1780001331162.png" },
     ],
     links: [
       {
