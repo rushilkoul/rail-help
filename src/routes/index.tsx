@@ -101,7 +101,7 @@ function Index() {
         <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-success/15 border border-success/30">
           <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
           <span className="text-[10px] font-bold text-success uppercase tracking-wider">
-            Live
+            live af
           </span>
         </div>
       </header>
@@ -119,8 +119,8 @@ function Index() {
           before you board.
         </h2>
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-          Crowdsourced vacancy data for Indian Railways — coach by coach,
-          station by station. no cap.
+          crowdsourced vacancy intel for Indian Railways — coach by coach,
+          station by station. no cap, big W energy. 🚆
         </p>
 
         <div className="flex gap-2 mt-4">
@@ -147,7 +147,7 @@ function Index() {
           boxShadow: "var(--shadow-3d)",
         }}
       >
-        <Field icon={<Train className="h-4 w-4" />} label="Train — drop the digits">
+        <Field icon={<Train className="h-4 w-4" />} label="train — drop the digits">
           <TrainAutocomplete
             value={train}
             onChange={setTrain}
@@ -157,13 +157,13 @@ function Index() {
           />
         </Field>
 
-        <Field icon={<MapPin className="h-4 w-4" />} label="Boarding station">
+        <Field icon={<MapPin className="h-4 w-4" />} label="boarding stn — where u hopping on">
           <select
             value={from}
             onChange={(e) => setFrom(e.target.value)}
             className="w-full bg-transparent outline-none text-base font-semibold appearance-none cursor-pointer"
           >
-            {STATIONS.map((s) => (
+            {stations.map((s) => (
               <option key={s} value={s} className="bg-card text-foreground">
                 {s}
               </option>
@@ -171,12 +171,14 @@ function Index() {
           </select>
         </Field>
 
+        <RouteProgress stations={stations} active={from} />
+
         <div className="mb-4">
           <label className="text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-2">
-            <Sofa className="h-3 w-3" /> Coach
+            <Sofa className="h-3 w-3" /> coach — pick ur whip
           </label>
           <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 no-scrollbar">
-            {COACHES.map((c) => {
+            {["ALL", ...coaches].map((c) => {
               const active = c === coach;
               return (
                 <button
@@ -214,7 +216,7 @@ function Index() {
           }}
         >
           <Search className="h-5 w-5" />
-          {loading ? "scanning, hold up…" : "spot empty seats"}
+          {loading ? loadingLine : "clock empty seats 👀"}
         </button>
       </section>
 
@@ -222,11 +224,13 @@ function Index() {
       <section>
         <div className="flex items-baseline justify-between mb-3 px-1">
           <h3 className="text-sm font-bold uppercase tracking-wider">
-            {results ? `${results.length} vacant in ${coach}` : "Recent scans"}
+            {results
+              ? `${results.length} seats secured${coach !== "ALL" ? ` · ${coach}` : ""} 🔓`
+              : "recent scans"}
           </h3>
           {results && (
             <span className="text-[10px] text-muted-foreground">
-              updated just now
+              fresh outta the oven
             </span>
           )}
         </div>
@@ -243,11 +247,22 @@ function Index() {
           </div>
         )}
 
-        {!loading && results && (
+        {!loading && results && results.length > 0 && (
           <div className="space-y-3">
             {results.map((s, i) => (
               <SeatCard key={i} seat={s} index={i} />
             ))}
+          </div>
+        )}
+
+        {!loading && results && results.length === 0 && (
+          <div
+            className="rounded-3xl p-6 border border-dashed border-border/60 text-center"
+            style={{ background: "oklch(0.12 0.018 260 / 0.4)" }}
+          >
+            <p className="text-sm text-muted-foreground">
+              nah this coach cooked 😭 — try another one bestie
+            </p>
           </div>
         )}
 
@@ -256,13 +271,68 @@ function Index() {
             className="rounded-3xl p-6 border border-dashed border-border/60 text-center"
             style={{ background: "oklch(0.12 0.018 260 / 0.4)" }}
           >
-            <p className="text-sm text-muted-foreground">
-              Tap <span className="text-primary font-semibold">Find vacant seats</span>{" "}
-              to scan coach <span className="font-bold">{coach}</span>.
-            </p>
+            <p className="text-sm text-muted-foreground">{emptyLine}</p>
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+function RouteProgress({
+  stations,
+  active,
+}: {
+  stations: string[];
+  active: string;
+}) {
+  const activeIdx = Math.max(0, stations.indexOf(active));
+  const pct =
+    stations.length > 1 ? (activeIdx / (stations.length - 1)) * 100 : 0;
+  return (
+    <div className="mb-4 px-1">
+      <div className="flex items-center gap-1.5 mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+        <RouteIcon className="h-3 w-3" /> route — big W ride
+      </div>
+      <div className="relative h-1.5 rounded-full bg-border/40 overflow-hidden mb-2">
+        <div
+          className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500"
+          style={{
+            width: `${pct}%`,
+            background: "var(--gradient-hero)",
+            boxShadow: "var(--shadow-glow)",
+          }}
+        />
+      </div>
+      <div className="flex justify-between gap-1">
+        {stations.map((s, i) => {
+          const passed = i <= activeIdx;
+          const code = s.match(/\(([^)]+)\)/)?.[1] ?? s.slice(0, 3).toUpperCase();
+          return (
+            <div
+              key={s}
+              className="flex flex-col items-center gap-1 flex-1 min-w-0"
+            >
+              <span
+                className="h-2 w-2 rounded-full transition-all"
+                style={{
+                  background: passed
+                    ? "var(--gradient-hero)"
+                    : "oklch(0.3 0.02 260)",
+                  boxShadow: passed ? "var(--shadow-glow)" : "none",
+                }}
+              />
+              <span
+                className={`text-[9px] font-bold tracking-wider truncate ${
+                  passed ? "text-foreground" : "text-muted-foreground/60"
+                }`}
+              >
+                {code}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
