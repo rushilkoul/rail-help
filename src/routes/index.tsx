@@ -2,6 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Train, MapPin, Search, Sofa, TrainFront } from "lucide-react";
 import { SeatCard, type Seat } from "@/components/SeatCard";
+import {
+  TrainAutocomplete,
+  type TrainOption,
+} from "@/components/TrainAutocomplete";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +43,24 @@ const STATIONS = [
 
 const COACHES = ["S1", "S2", "S3", "S4", "S5", "B1", "B2", "B3", "A1", "A2"];
 
+const TRAINS: TrainOption[] = [
+  { number: "12951", name: "Rajdhani Express", route: "NDLS → BCT" },
+  { number: "22435", name: "Vande Bharat Express", route: "NDLS → BSB" },
+  { number: "12230", name: "Lucknow Mail", route: "NDLS → LKO" },
+  { number: "12002", name: "Bhopal Shatabdi", route: "NDLS → HBJ" },
+  { number: "12259", name: "Sealdah Duronto", route: "NDLS → SDAH" },
+  { number: "12622", name: "Tamil Nadu Express", route: "NDLS → MAS" },
+  { number: "12009", name: "Mumbai Shatabdi", route: "BCT → ADI" },
+  { number: "12309", name: "Rajendra Nagar Rajdhani", route: "NDLS → RJPB" },
+  { number: "12423", name: "Dibrugarh Rajdhani", route: "NDLS → DBRG" },
+  { number: "12626", name: "Kerala Express", route: "NDLS → TVC" },
+  { number: "12903", name: "Golden Temple Mail", route: "BCT → ASR" },
+  { number: "12313", name: "Sealdah Rajdhani", route: "NDLS → SDAH" },
+  { number: "22691", name: "Rajdhani Express", route: "SBC → NZM" },
+  { number: "12565", name: "Bihar Sampark Kranti", route: "DBG → NDLS" },
+  { number: "12869", name: "Howrah CSMT Express", route: "HWH → CSMT" },
+];
+
 const MOCK_SEATS: Seat[] = [
   { train: "12951 Rajdhani Express",  coach: "B1", seatNumber: "12", berth: "Lower",       vacantTill: "Kota Jn",         fromStation: "New Delhi",   confidence: 94 },
   { train: "12951 Rajdhani Express",  coach: "A1", seatNumber: "07", berth: "Lower",       vacantTill: "Mumbai Central",  fromStation: "New Delhi",   confidence: 96 },
@@ -57,7 +79,7 @@ function getMockSeats(_coach: string, _station: string): Seat[] {
 }
 
 function Index() {
-  const [train, setTrain] = useState("12951");
+  const [train, setTrain] = useState("");
   const [from, setFrom] = useState(STATIONS[0]);
   const [coach, setCoach] = useState("S4");
   const [results, setResults] = useState<Seat[] | null>(null);
@@ -153,12 +175,13 @@ function Index() {
           boxShadow: "var(--shadow-3d)",
         }}
       >
-        <Field icon={<Train className="h-4 w-4" />} label="Train number / name">
-          <input
+        <Field icon={<Train className="h-4 w-4" />} label="Train — drop the digits">
+          <TrainAutocomplete
             value={train}
-            onChange={(e) => setTrain(e.target.value)}
-            placeholder="e.g. 12951 Rajdhani"
-            className="w-full bg-transparent outline-none text-base font-semibold placeholder:text-muted-foreground/60"
+            onChange={setTrain}
+            onPick={(t) => setTrain(`${t.number} ${t.name}`)}
+            options={TRAINS}
+            placeholder="e.g. 12951 or Rajdhani"
           />
         </Field>
 
@@ -219,7 +242,7 @@ function Index() {
           }}
         >
           <Search className="h-5 w-5" />
-          {loading ? "Scanning coach…" : "Find vacant seats"}
+          {loading ? "scanning, hold up…" : "spot empty seats"}
         </button>
       </section>
 
