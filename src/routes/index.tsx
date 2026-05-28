@@ -39,20 +39,21 @@ const STATIONS = [
 
 const COACHES = ["S1", "S2", "S3", "S4", "S5", "B1", "B2", "B3", "A1", "A2"];
 
-function generateSeats(coach: string, station: string): Seat[] {
-  const berths = ["Lower", "Upper", "Middle", "Side L", "Side U"];
-  const pool = STATIONS.filter((s) => s !== station);
-  return Array.from({ length: 6 }).map((_, i) => {
-    const num = 7 + i * 11 + coach.length * 3;
-    return {
-      coach,
-      seatNumber: String((num % 72) + 1).padStart(2, "0"),
-      berth: berths[i % berths.length],
-      vacantTill: pool[(i * 2) % pool.length].split(" (")[0],
-      fromStation: station.split(" (")[0],
-      confidence: 95 - i * 7 + (i % 2 === 0 ? 2 : -3),
-    };
-  });
+const MOCK_SEATS: Seat[] = [
+  { coach: "B1", seatNumber: "12", berth: "Lower", vacantTill: "Kota Jn", fromStation: "New Delhi", confidence: 94 },
+  { coach: "B1", seatNumber: "15", berth: "Upper", vacantTill: "Vadodara Jn", fromStation: "New Delhi", confidence: 89 },
+  { coach: "B2", seatNumber: "03", berth: "Lower", vacantTill: "Ratlam Jn", fromStation: "New Delhi", confidence: 91 },
+  { coach: "B2", seatNumber: "22", berth: "Side Lower", vacantTill: "Surat", fromStation: "New Delhi", confidence: 87 },
+  { coach: "A1", seatNumber: "07", berth: "Lower", vacantTill: "Mumbai Central", fromStation: "New Delhi", confidence: 96 },
+  { coach: "A1", seatNumber: "11", berth: "Upper", vacantTill: "Kota Jn", fromStation: "New Delhi", confidence: 92 },
+  { coach: "S4", seatNumber: "34", berth: "Middle", vacantTill: "Vadodara Jn", fromStation: "New Delhi", confidence: 78 },
+  { coach: "S4", seatNumber: "41", berth: "Side Upper", vacantTill: "Ratlam Jn", fromStation: "New Delhi", confidence: 83 },
+  { coach: "S5", seatNumber: "18", berth: "Lower", vacantTill: "Surat", fromStation: "New Delhi", confidence: 85 },
+  { coach: "S5", seatNumber: "29", berth: "Upper", vacantTill: "Mumbai Central", fromStation: "New Delhi", confidence: 80 },
+];
+
+function getMockSeats(_coach: string, _station: string): Seat[] {
+  return MOCK_SEATS;
 }
 
 function Index() {
