@@ -250,7 +250,7 @@ function Index() {
         {!loading && results && results.length > 0 && (
           <div className="space-y-3">
             {results.map((s, i) => (
-              <SeatCard key={i} seat={s} index={i} />
+              <SeatCard key={i} seat={s} index={i} route={stations} />
             ))}
           </div>
         )}
