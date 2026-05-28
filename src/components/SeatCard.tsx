@@ -23,7 +23,7 @@ export function SeatCard({ seat, index }: { seat: Seat; index: number }) {
 
   return (
     <div
-      className="group relative rounded-3xl p-5 border border-border/60 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500"
+      className="group relative rounded-3xl p-5 border border-border/60 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 transition-transform active:scale-[0.98] hover:-translate-y-0.5"
       style={{
         background: "var(--gradient-card)",
         boxShadow: "var(--shadow-3d)",
