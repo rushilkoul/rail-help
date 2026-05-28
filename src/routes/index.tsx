@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Train, MapPin, Search, Sofa, TrainFront } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Train, MapPin, Search, Sofa, TrainFront, Route as RouteIcon } from "lucide-react";
 import { SeatCard, type Seat } from "@/components/SeatCard";
-import {
-  TrainAutocomplete,
-  type TrainOption,
-} from "@/components/TrainAutocomplete";
+import { TrainAutocomplete } from "@/components/TrainAutocomplete";
+import { TRAINS, findTrain, LOADING_LINES, EMPTY_LINES } from "@/data/trains";
 
 export const Route = createFileRoute("/")({
   head: () => ({
