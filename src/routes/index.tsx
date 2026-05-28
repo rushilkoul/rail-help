@@ -40,16 +40,16 @@ const STATIONS = [
 const COACHES = ["S1", "S2", "S3", "S4", "S5", "B1", "B2", "B3", "A1", "A2"];
 
 const MOCK_SEATS: Seat[] = [
-  { coach: "B1", seatNumber: "12", berth: "Lower", vacantTill: "Kota Jn", fromStation: "New Delhi", confidence: 94 },
-  { coach: "B1", seatNumber: "15", berth: "Upper", vacantTill: "Vadodara Jn", fromStation: "New Delhi", confidence: 89 },
-  { coach: "B2", seatNumber: "03", berth: "Lower", vacantTill: "Ratlam Jn", fromStation: "New Delhi", confidence: 91 },
-  { coach: "B2", seatNumber: "22", berth: "Side Lower", vacantTill: "Surat", fromStation: "New Delhi", confidence: 87 },
-  { coach: "A1", seatNumber: "07", berth: "Lower", vacantTill: "Mumbai Central", fromStation: "New Delhi", confidence: 96 },
-  { coach: "A1", seatNumber: "11", berth: "Upper", vacantTill: "Kota Jn", fromStation: "New Delhi", confidence: 92 },
-  { coach: "S4", seatNumber: "34", berth: "Middle", vacantTill: "Vadodara Jn", fromStation: "New Delhi", confidence: 78 },
-  { coach: "S4", seatNumber: "41", berth: "Side Upper", vacantTill: "Ratlam Jn", fromStation: "New Delhi", confidence: 83 },
-  { coach: "S5", seatNumber: "18", berth: "Lower", vacantTill: "Surat", fromStation: "New Delhi", confidence: 85 },
-  { coach: "S5", seatNumber: "29", berth: "Upper", vacantTill: "Mumbai Central", fromStation: "New Delhi", confidence: 80 },
+  { train: "12951 Rajdhani Express",  coach: "B1", seatNumber: "12", berth: "Lower",       vacantTill: "Kota Jn",         fromStation: "New Delhi",   confidence: 94 },
+  { train: "12951 Rajdhani Express",  coach: "A1", seatNumber: "07", berth: "Lower",       vacantTill: "Mumbai Central",  fromStation: "New Delhi",   confidence: 96 },
+  { train: "22435 Vande Bharat",      coach: "C3", seatNumber: "24", berth: "Window",      vacantTill: "Kanpur Central",  fromStation: "New Delhi",   confidence: 91 },
+  { train: "22435 Vande Bharat",      coach: "C5", seatNumber: "48", berth: "Aisle",       vacantTill: "Prayagraj Jn",    fromStation: "New Delhi",   confidence: 88 },
+  { train: "12230 Lucknow Mail",      coach: "S4", seatNumber: "34", berth: "Middle",      vacantTill: "Aligarh Jn",      fromStation: "New Delhi",   confidence: 78 },
+  { train: "12230 Lucknow Mail",      coach: "S7", seatNumber: "41", berth: "Side Upper",  vacantTill: "Lucknow Nr",      fromStation: "New Delhi",   confidence: 83 },
+  { train: "12002 Shatabdi Express",  coach: "E2", seatNumber: "19", berth: "Window",      vacantTill: "Gwalior Jn",      fromStation: "New Delhi",   confidence: 90 },
+  { train: "12259 Sealdah Duronto",   coach: "B3", seatNumber: "22", berth: "Side Lower",  vacantTill: "Patna Jn",        fromStation: "New Delhi",   confidence: 86 },
+  { train: "12622 Tamil Nadu Express",coach: "A2", seatNumber: "11", berth: "Upper",       vacantTill: "Nagpur Jn",       fromStation: "New Delhi",   confidence: 92 },
+  { train: "12009 Mumbai Shatabdi",   coach: "C1", seatNumber: "29", berth: "Window",      vacantTill: "Surat",           fromStation: "Mumbai Central", confidence: 81 },
 ];
 
 function getMockSeats(_coach: string, _station: string): Seat[] {
