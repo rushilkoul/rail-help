@@ -5,11 +5,11 @@ import { SeatCard, type Seat } from "@/components/SeatCard";
 import { TrainAutocomplete } from "@/components/TrainAutocomplete";
 import { TRAINS, findTrain, LOADING_LINES, EMPTY_LINES } from "@/data/trains";
 import { supabase } from "@/lib/supabase";
-
+import { getTrainInfo } from "@/lib/railwaydata";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "RailVacant — Find empty seats on Indian trains" },
+      { title: "RailVacant - Find empty seats on Indian trains" },
       {
         name: "description",
         content:
@@ -24,7 +24,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
 function Index() {
 
   useEffect(() => {
@@ -39,10 +38,25 @@ function Index() {
         setDbTrains(data);
       }
     }
-  
+    async function testAPI() {
+      const data = await getTrainInfo("12051");
+    
+      const stations =
+        data.body?.[0]?.trains?.[0]?.schedule?.map(
+          (s: any) => s.stationName
+        ) ?? [];
+    
+      console.log("API STATIONS:", stations);
+    
+      setApiStations(stations);
+    }
+    
     testSupabase();
+    testAPI();
+    
   }, []);
   const [dbTrains, setDbTrains] = useState<any[]>([]);
+  const [apiStations, setApiStations] = useState<string[]>([]);
   console.log("DB TRAINS STATE:", dbTrains);
   const defaultTrain = dbTrains[0] ?? TRAINS[0];
   const [train, setTrain] = useState(`${defaultTrain.number} ${defaultTrain.name}`);
@@ -53,9 +67,12 @@ function Index() {
   const selectedDbTrain = dbTrains.find(
     (t) => `${t.number} ${t.name}` === train
   );
-  const stations = selectedDbTrain?.stations ?? selectedTrain.stations;
-  const coaches = selectedTrain.coaches;
-
+  const stations =
+  apiStations.length > 0
+    ? apiStations
+    : selectedDbTrain?.stations ?? selectedTrain.stations;
+ 
+    const coaches = selectedTrain.coaches;
   const [from, setFrom] = useState(stations[0]);
   const [coach, setCoach] = useState<string>("ALL");
   const [results, setResults] = useState<Seat[] | null>(null);
@@ -64,7 +81,7 @@ function Index() {
 
   useEffect(() => {
     setCoach("ALL");
-    setFrom(selectedTrain.stations[0]);
+    setFrom(stations[0]);
     setResults(null);
   }, [selectedTrain.number, selectedTrain.stations]);
 
