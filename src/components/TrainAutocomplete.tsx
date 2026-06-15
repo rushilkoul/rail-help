@@ -184,15 +184,14 @@ function Row({
           {t.number}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold truncate">
-            {highlight ? <Highlight text={t.name} q={highlight} /> : t.name}
-          </p>
-          {t.route && (
-            <p className="text-[11px] text-muted-foreground truncate">
-              {t.route}
-            </p>
-          )}
-        </div>
+  <p className="text-sm font-semibold truncate">
+    {highlight ? <Highlight text={t.name} q={highlight} /> : t.name}
+  </p>
+
+  <p className="text-[11px] text-muted-foreground">
+    Train No. {t.number}
+  </p>
+</div>
       </button>
     </li>
   );

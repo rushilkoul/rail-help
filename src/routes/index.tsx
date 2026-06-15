@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo,  useState } from "react";
 import { Train, MapPin, Search, Sofa, TrainFront, Route as RouteIcon } from "lucide-react";
+
 import { SeatCard, type Seat } from "@/components/SeatCard";
-import { TrainAutocomplete } from "@/components/TrainAutocomplete";
-import { TRAINS, findTrain, LOADING_LINES, EMPTY_LINES } from "@/data/trains";
-import { supabase } from "@/lib/supabase";
+import { LOADING_LINES, EMPTY_LINES } from "@/data/trains";
 import { getTrainInfo } from "@/lib/railwaydata";
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,76 +25,110 @@ export const Route = createFileRoute("/")({
 });
 function Index() {
 
-  useEffect(() => {
-    async function testSupabase() {
-      const { data, error } = await supabase
-        .from("train")
-        .select("*");
   
-      console.log("DATA:", data);
-      console.log("ERROR:", error);
-      if (data) {
-        setDbTrains(data);
-      }
-    }
-    async function testAPI() {
-      const data = await getTrainInfo("12051");
-    
-      const stations =
-        data.body?.[0]?.trains?.[0]?.schedule?.map(
-          (s: any) => s.stationName
-        ) ?? [];
-    
-      console.log("API STATIONS:", stations);
-    
-      setApiStations(stations);
-    }
-    
-    testSupabase();
-    testAPI();
-    
-  }, []);
-  const [dbTrains, setDbTrains] = useState<any[]>([]);
-  const [apiStations, setApiStations] = useState<string[]>([]);
-  console.log("DB TRAINS STATE:", dbTrains);
-  const defaultTrain = dbTrains[0] ?? TRAINS[0];
-  const [train, setTrain] = useState(`${defaultTrain.number} ${defaultTrain.name}`);
-  const selectedTrain = useMemo(
-    () => findTrain(train) ?? defaultTrain,
-    [train, defaultTrain],
-  );
-  const selectedDbTrain = dbTrains.find(
-    (t) => `${t.number} ${t.name}` === train
-  );
-  const stations =
-  apiStations.length > 0
-    ? apiStations
-    : selectedDbTrain?.stations ?? selectedTrain.stations;
  
-    const coaches = selectedTrain.coaches;
-  const [from, setFrom] = useState(stations[0]);
-  const [coach, setCoach] = useState<string>("ALL");
-  const [results, setResults] = useState<Seat[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingLine, setLoadingLine] = useState(LOADING_LINES[0]);
+  const [apiStations, setApiStations] = useState<string[]>([]);
 
+  const [train, setTrain] = useState("");
+const [trainName, setTrainName] = useState("");
+  
+  const stations = apiStations;
+      const [from, setFrom] = useState("");
+      const [coach, setCoach] = useState<string>("ALL");
+      const [results, setResults] = useState<Seat[] | null>(null);
+      const [loading, setLoading] = useState(false);
+      const [loadingLine, setLoadingLine] = useState(LOADING_LINES[0]);
+    
+     
+      const coaches = ["A1", "A2", "B1", "B2", "B3"];
+  
+ 
+  
   useEffect(() => {
     setCoach("ALL");
-    setFrom(stations[0]);
+  
+    if (stations.length > 0) {
+      setFrom(stations[0]);
+    }
+  
     setResults(null);
-  }, [selectedTrain.number, selectedTrain.stations]);
+  }, [stations]);
+  const onSearch = async () => {
+    const trainNumber = train.trim();
 
-  const onSearch = () => {
+    if (!trainNumber) {
+      alert("Please enter a train number.");
+      return;
+    }
+    
+    if (trainNumber.length !== 5) {
+      alert("Please enter a valid 5-digit train number.");
+      return;
+    }
     setLoading(true);
     setResults(null);
     setLoadingLine(
       LOADING_LINES[Math.floor(Math.random() * LOADING_LINES.length)],
     );
+    let fetchedTrainName = "";
+let stations: string[] = [];
+    try {
+      const data = await getTrainInfo(trainNumber);
+    
+      const trainData = data?.body?.[0]?.trains?.[0];
+      if (
+        !trainData ||
+        String(trainData.trainNumber) !== trainNumber
+      ) {
+        throw new Error("Invalid train number");
+      }
+
+      fetchedTrainName = trainData?.trainName || "";
+      
+      setTrainName(fetchedTrainName);
+    
+       stations =
+        trainData?.schedule?.map(
+          (s: any) => s.stationName
+        ) || [];
+    
+      setApiStations(stations);
+    
+      if (stations.length > 0) {
+        setFrom(stations[0]);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Train not found. Please enter a valid train number.");
+      setLoading(false);
+      return;
+    }
     setTimeout(() => {
-      const all = selectedTrain.seats;
-      const filtered =
-        coach === "ALL" ? all : all.filter((s) => s.coach === coach);
-      setResults(filtered);
+      if (stations.length === 0) {
+        setLoading(false);
+        return;
+      }
+      const generatedSeats: Seat[] = Array.from({ length: 12 }, (_, i) => ({
+      train: `${train} ${fetchedTrainName}`,
+        coach:
+          coach === "ALL"
+            ? coaches[Math.floor(Math.random() * coaches.length)]
+            : coach,
+    
+        seatNumber: String(i + 1).padStart(2, "0"),
+    
+        berth: ["Lower", "Middle", "Upper", "Side Lower", "Side Upper"][
+          Math.floor(Math.random() * 5)
+        ],
+    
+        vacantTill:
+        stations[Math.floor(Math.random() * stations.length)] || "",
+    
+        fromStation: from,
+        confidence: Math.floor(Math.random() * 30) + 70,
+      }));
+    
+      setResults(generatedSeats);
       setLoading(false);
     }, 700);
   };
@@ -187,16 +220,20 @@ function Index() {
         }}
       >
         <Field icon={<Train className="h-4 w-4" />} label="train — drop the digits">
-          <TrainAutocomplete
-            value={train}
-            onChange={setTrain}
-            onPick={(t) => setTrain(`${t.number} ${t.name}`)}
-            options={dbTrains.length > 0 ? dbTrains : TRAINS}
-            placeholder="e.g. 12951 or Rajdhani"
-          />
+        <input
+  value={train}
+  onChange={(e) => setTrain(e.target.value)}
+placeholder="e.g. 12951, 12051, 12627"
+  className="w-full bg-transparent outline-none text-base font-semibold"
+/>
         </Field>
 
         <Field icon={<MapPin className="h-4 w-4" />} label="boarding stn — where u hopping on">
+        {trainName && (
+  <p className="text-sm text-muted-foreground mb-3">
+    {trainName}
+  </p>
+)}
           <select
             value={from}
             onChange={(e) => setFrom(e.target.value)}
@@ -289,7 +326,7 @@ function Index() {
         {!loading && results && results.length > 0 && (
           <div className="space-y-3">
             {results.map((s, i) => (
-              <SeatCard key={i} seat={s} index={i} route={stations} />
+              <SeatCard key={i} seat={s} index={i}route={apiStations}/>
             ))}
           </div>
         )}
@@ -325,6 +362,14 @@ function RouteProgress({
   stations: string[];
   active: string;
 }) {
+  const displayStations =
+  stations.length > 8
+    ? [
+        stations[0],
+        stations[Math.floor(stations.length / 2)],
+        stations[stations.length - 1],
+      ]
+    : stations;
   const activeIdx = Math.max(0, stations.indexOf(active));
   const pct =
     stations.length > 1 ? (activeIdx / (stations.length - 1)) * 100 : 0;
@@ -344,7 +389,7 @@ function RouteProgress({
         />
       </div>
       <div className="flex justify-between gap-1">
-        {stations.map((s, i) => {
+        {displayStations.map((s, i) => {
           const passed = i <= activeIdx;
           const code = s.match(/\(([^)]+)\)/)?.[1] ?? s.slice(0, 3).toUpperCase();
           return (

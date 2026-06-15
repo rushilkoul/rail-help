@@ -14,7 +14,5 @@ export async function getTrainInfo(train: string) {
 
   const data = await response.json();
 
-  console.log("TRAIN API DATA:", data);
-
   return data;
 }
